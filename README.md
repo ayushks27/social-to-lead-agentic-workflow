@@ -98,6 +98,7 @@ State Management
 
 The agent maintains a persistent in-memory state dictionary across conversation turns, enabling memory retention over 5–6 interactions. The state stores conversation history, detected intent, confidence scores, and partially collected lead details (name, email, platform). During high-intent flows, the agent uses a slot-filling approach to incrementally update this state based on user responses. This ensures context continuity and guarantees that backend actions are triggered only when all required information is present. This approach is functionally equivalent to LangGraph state or memory buffers and demonstrates clean, real-world state management.
 
+
 ⭐ Enhancement: Hybrid Intent Detection (LLM + Heuristics)
 
 To improve robustness, the agent uses a hybrid intent detection strategy:
