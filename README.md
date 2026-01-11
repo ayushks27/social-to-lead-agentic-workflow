@@ -82,6 +82,8 @@ Collects the following details across multiple turns:
     
     -Triggers the backend tool only after all details are collected
 
+Required Function 
+
     def mock_lead_capture(name, email, platform):
         print(f"Lead captured successfully: {name}, {email}, {platform}")
 
@@ -180,14 +182,3 @@ To deploy this agent on WhatsApp, a Webhook-based integration can be implemented
 
 This architecture enables scalable, real-time social-to-lead conversion while preserving conversational context.
 
-
-📁 Project Structure
-src/
- ├── agent/
- │   ├── intent.py        # Intent detection (LLM + heuristics)
- │   ├── rag.py           # RAG knowledge retrieval
- │   ├── graph.py         # Agent logic & state transitions
- │   ├── tools.py         # Mock lead capture tool
- ├── data/
- │   └── knowledge_base.json
- └── main.py              # Application entry point
