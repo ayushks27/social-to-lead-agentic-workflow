@@ -1,184 +1,104 @@
-AutoStream – Social-to-Lead Agentic Workflow
+🚀 AutoStream: Social-to-Lead Agentic Workflow
+AutoStream is a GenAI-powered conversational agent designed to transform social interactions into qualified business leads. Unlike a standard FAQ bot, this agent uses Intent Classification, Retrieval-Augmented Generation (RAG), and Stateful Slot-Filling to guide users from initial curiosity to lead capture.
 
-This project implements a GenAI-powered conversational agent for a fictional SaaS product AutoStream.
+🧠 Core Capabilities
+1. Hybrid Intent Identification
+The agent classifies user messages into three distinct categories to determine the next logical step in the conversation:
 
-AutoStream provides automated video editing tools for content creators.
-The goal of this agent is to convert conversational interactions into qualified business leads, not just answer user queries.
+Casual Greeting: Engagement and rapport building.
 
-The agent is designed to:
+Product/Pricing Inquiry: Dynamic information retrieval via RAG.
 
-Understand user intent
+High-Intent Lead: Activation of the lead-generation funnel.
 
-Answer product and pricing questions accurately
+Note: Uses a Hybrid Approach (Gemini 1.5 Flash + Keyword Heuristics) to ensure 100% uptime even during API rate limits.
 
-Identify high-intent users
+2. RAG-Powered Knowledge Base
+The agent retrieves product specifications and company policies from a structured local knowledge base, ensuring responses are always grounded in fact.
 
-Trigger backend lead capture actions safely
+Basic Plan: $29/mo (10 videos, 720p).
 
-🧠 Agent Capabilities
+Pro Plan: $79/mo (Unlimited, 4K, AI Captions).
 
-1️⃣ Intent Identification
+Policies: 7-day refund window & 24/7 Pro support.
 
-The agent classifies user messages into three intents:
-
-Casual Greeting
-
-Product or Pricing Inquiry
-
-High-Intent Lead (ready to sign up)
-
-Intent detection uses a hybrid approach:
-
-Primary: LLM-based classification using Gemini 1.5 Flash
-
-Fallback: Rule-based heuristics for reliability during local testing or API unavailability
-
-2️⃣ RAG-Powered Knowledge Retrieval
-
-The agent uses Retrieval-Augmented Generation (RAG) with a local knowledge base (JSON/Markdown).
-
-Included Knowledge
-
-Basic Plan
-
-$29/month
-
-10 videos/month
-
-720p resolution
-
-Pro Plan
-
-$79/month
-
-Unlimited videos
-
-4K resolution
-
-AI captions
-
-Company Policies
-
-No refunds after 7 days
-
-24/7 support available only on Pro plan
-
-Responses are retrieved dynamically from the knowledge base, not hard-coded.
-
-3️⃣ Tool Execution – Lead Capture
-
-When a user shows high intent, the agent:
-
-Collects the following details across multiple turns:
+3. Stateful Lead Capture (Slot-Filling)
+When a user exhibits "High Intent," the agent shifts into a lead-capture mode. It maintains an internal state to collect:
 
 Name
 
 Email
 
-Creator platform (YouTube, Instagram, etc.)
+Creator Platform (e.g., YouTube, Instagram)
 
-Uses slot-filling to retain partially collected data
+The backend tool mock_lead_capture is only triggered once all three slots are successfully filled.
 
-Triggers the backend tool only after all details are collected
+🏗 Architecture & State Management
+Why LangChain?
+While many bots are hard-coded, AutoStream uses LangChain for a modular architecture. This allows for a clean separation between the "Brain" (LLM), the "Memory" (State), and the "Hands" (Tools).
 
-def mock_lead_capture(name, email, platform):
-    print(f"Lead captured successfully: {name}, {email}, {platform}")
+State Handling
+The system employs a persistent in-memory dictionary that tracks:
 
+Conversation History: For context-aware responses.
 
-The tool is never triggered prematurely.
+Intent Scores: To pivot between chat and lead capture.
 
-🔧 Architecture Explanation
+Entity Extraction: To remember your name or email across multiple turns.
 
-Why LangChain
+🛠 Project Structure
+Plaintext
 
-This project uses LangChain to build a modular, agentic conversational workflow instead of a simple rule-based chatbot. LangChain provides structured abstractions for working with Large Language Models, prompt handling, and tool execution, making it suitable for real-world GenAI applications like Inflx. The framework allows clear separation between intent detection, RAG-based knowledge retrieval, and backend tool execution. Although LangGraph is preferred, the assignment explicitly allows equivalent approaches, and this implementation uses LangChain with explicit state handling to achieve the same outcome in a simpler and more stable manner.
+autostream-agent/
+├── src/
+│   ├── agent/
+│   │   ├── intent.py      # LLM + Heuristic intent logic
+│   │   ├── rag.py         # Knowledge retrieval logic
+│   │   ├── graph.py       # Workflow & state transitions
+│   │   └── tools.py       # Mock lead capture execution
+│   ├── data/
+│   │   └── knowledge_base.json
+│   └── main.py            # CLI entry point
+├── .env                   # API Keys (ignored by git)
+├── requirements.txt       # Dependencies
+└── README.md
+🚀 Getting Started
+Prerequisites
+Python 3.9+
 
-State Management
+Google Gemini API Key
 
-The agent maintains a persistent in-memory state dictionary across conversation turns, enabling memory retention over 5–6 interactions. The state stores conversation history, detected intent, confidence scores, and partially collected lead details (name, email, platform). During high-intent flows, the agent uses a slot-filling approach to incrementally update this state based on user responses. This ensures context continuity and guarantees that backend actions are triggered only when all required information is present. This approach is functionally equivalent to LangGraph state or memory buffers and demonstrates clean, real-world state management.
+Installation
+Clone & Enter Directory:
 
-⭐ Bonus: Hybrid Intent Detection (LLM + Heuristics)
+Bash
 
-To improve robustness, the agent uses a hybrid intent detection strategy:
-
-Primary: Gemini 1.5 Flash for intent classification
-
-Fallback: Keyword-based heuristics when LLM access is unavailable
-
-This ensures reliable behavior during local testing, demos, and production-like failures, and reflects real-world conversational AI system design.
-
-▶️ How to Run the Project Locally
-
--> Clone the Repository
-git clone <your-github-repo-url>
+git clone https://github.com/your-repo/autostream-agent.git
 cd autostream-agent
+Setup Environment:
 
--> Create a Virtual Environment
+Bash
+
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-
--> Install Dependencies
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+Configure API Key: Create a .env file in the root directory:
 
--> Set Environment Variables
+Code snippet
 
-Create a .env file:
+GOOGLE_API_KEY=your_gemini_api_key_here
+Run the Agent:
 
-GOOGLE_API_KEY=your_api_key_here
+Bash
 
-Note: The agent is configured for Gemini 1.5 Flash as required by the assignment.
-A heuristic fallback ensures local execution even if API access is unavailable.
-
--> Run the Agent
 python src/main.py
+📱 Conceptual Deployment: WhatsApp
+To move from CLI to production, the agent is designed to sit behind a Webhook.
 
-💬 Sample Conversation Flow
-User: Hi
-Agent: Hi! I can help you with AutoStream pricing, plans, or features.
+Incoming: Message received via WhatsApp Business API (Twilio/Meta).
 
-User: Tell me about pricing
-Agent: AutoStream Pricing:
-- Basic Plan: $29/month...
-- Pro Plan: $79/month...
+Processing: Backend passes the sender_id to our State Manager to resume the session.
 
-User: I want the Pro plan for my YouTube channel
-Agent: Great! May I know your name?
+Action: Agent performs RAG or collects the next lead "slot."
 
-User: Ayush
-Agent: Thanks! Please share your email address.
-
-User: ayush@gmail.com
-Agent: Which creator platform do you use?
-
-User: YouTube
-Lead captured successfully: Ayush, ayush@gmail.com, YouTube
-Agent: Thanks! Your details have been captured. Our team will reach out shortly.
-
-📲 WhatsApp Deployment (Conceptual Design)
-
-To deploy this agent on WhatsApp, a Webhook-based integration can be implemented using the WhatsApp Business API (via Meta or providers like Twilio).
-
-Incoming Message
-A user message triggers a webhook on the backend containing sender ID and message text.
-
-Agent Processing
-The backend forwards the message to the AutoStream agent, which updates state, detects intent, performs RAG, or continues lead qualification.
-
-Response Generation
-The agent generates a response based on the current conversation state.
-
-Sending Reply
-The backend sends the response back to the user using the WhatsApp Business API.
-
-This architecture enables scalable, real-time social-to-lead conversion while preserving conversational context.
-
-📁 Project Structure
-src/
- ├── agent/
- │   ├── intent.py        # Intent detection (LLM + heuristics)
- │   ├── rag.py           # RAG knowledge retrieval
- │   ├── graph.py         # Agent logic & state transitions
- │   ├── tools.py         # Mock lead capture tool
- ├── data/
- │   └── knowledge_base.json
- └── main.py              # Application entry point
+Outgoing: Response is pushed back to the user via the API.
