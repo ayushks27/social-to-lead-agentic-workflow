@@ -113,8 +113,8 @@ How to Run the Project Locally
 
 -> Clone the Repository
 
-    git clone <your-github-repo-url>
-    cd autostream-agent
+    git clone https://github.com/ayushks27/social-to-lead-agentic-workflow.git
+    cd social-to-lead-agentic-workflow
 
 -> Create a Virtual Environment
 
