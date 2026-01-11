@@ -27,6 +27,7 @@ The agent classifies user messages into three intents:
     
     High-Intent Lead (ready to sign up)
     
+    
     Intent detection uses a hybrid approach:
     
     Primary: LLM-based classification using Gemini 1.5 Flash
@@ -81,8 +82,8 @@ Collects the following details across multiple turns:
     
     Triggers the backend tool only after all details are collected
 
-def mock_lead_capture(name, email, platform):
-    print(f"Lead captured successfully: {name}, {email}, {platform}")
+    def mock_lead_capture(name, email, platform):
+        print(f"Lead captured successfully: {name}, {email}, {platform}")
 
 The tool is never triggered prematurely.
 
@@ -110,27 +111,27 @@ This ensures reliable behavior during local testing, demos, and production-like 
 -> How to Run the Project Locally
 
 -> Clone the Repository
-git clone <your-github-repo-url>
-cd autostream-agent
+    git clone <your-github-repo-url>
+    cd autostream-agent
 
 -> Create a Virtual Environment
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+    python -m venv venv
+    source venv/bin/activate   # Windows: venv\Scripts\activate
 
 -> Install Dependencies
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
 -> Set Environment Variables
 
 Create a .env file:
 
-GOOGLE_API_KEY=your_api_key_here
+    GOOGLE_API_KEY=your_api_key_here
 
 Note: The agent is configured for Gemini 1.5 Flash as required by the assignment.
 A heuristic fallback ensures local execution even if API access is unavailable.
 
 -> Run the Agent
-python src/main.py
+    python src/main.py
 
 💬 Sample Conversation Flow
 User: Hi
@@ -154,23 +155,25 @@ User: YouTube
 Lead captured successfully: Ayush, ayush@gmail.com, YouTube
 Agent: Thanks! Your details have been captured. Our team will reach out shortly.
 
+
 📲 WhatsApp Deployment (Conceptual Design)
 
 To deploy this agent on WhatsApp, a Webhook-based integration can be implemented using the WhatsApp Business API (via Meta or providers like Twilio).
 
-Incoming Message
-A user message triggers a webhook on the backend containing sender ID and message text.
-
-Agent Processing
-The backend forwards the message to the AutoStream agent, which updates state, detects intent, performs RAG, or continues lead qualification.
-
-Response Generation
-The agent generates a response based on the current conversation state.
-
-Sending Reply
-The backend sends the response back to the user using the WhatsApp Business API.
+    Incoming Message
+    A user message triggers a webhook on the backend containing sender ID and message text.
+    
+    Agent Processing
+    The backend forwards the message to the AutoStream agent, which updates state, detects intent, performs RAG, or continues lead qualification.
+    
+    Response Generation
+    The agent generates a response based on the current conversation state.
+    
+    Sending Reply
+    The backend sends the response back to the user using the WhatsApp Business API.
 
 This architecture enables scalable, real-time social-to-lead conversion while preserving conversational context.
+
 
 📁 Project Structure
 src/
