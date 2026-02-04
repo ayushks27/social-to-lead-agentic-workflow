@@ -1,254 +1,153 @@
 AutoStream – Social-to-Lead Agentic Workflow
 
-AutoStream is a GenAI-powered conversational agent designed to convert user conversations into qualified business leads, rather than functioning as a simple FAQ chatbot. The project simulates a real-world SaaS use case where conversational AI is used to identify intent, answer product questions, and safely trigger backend lead capture workflows. AutoStream is a fictional SaaS product offering automated video editing tools for content creators.
+Overview
 
-Problem Statement
+    - AutoStream is a production-style GenAI conversational agent designed to convert natural language conversations into qualified business leads for a fictional SaaS product offering automated video editing tools for content creators.
+    - The system goes beyond question-answering by detecting user intent, retrieving product knowledge, maintaining conversational state, and safely triggering backend actions only when qualification criteria are met.
+    - This project demonstrates agentic workflow design, Retrieval-Augmented Generation (RAG), and multi-turn state management, aligned with real-world conversational AI systems.
 
-Most conversational agents stop at answering user questions.
-AutoStream goes further by:
+Key Capabilities
 
-    - Detecting high-intent users
-    - Collecting lead information across multiple turns
-    - Triggering backend actions only when qualification is complete
+1. Intent Detection (Hybrid Approach)
 
-This mirrors real-world GenAI use cases in sales automation, growth engineering, and customer acquisition.
+        - User messages are classified into one of three intents:
+        - Casual greeting
+        - Product or pricing inquiry
+        - High-intent lead (ready to sign up)
 
-Agent Capabilities
+Implementation details:
 
-1. Intent Identification
-   
-            - Each user message is classified into one of three intents:
-            - Casual Greeting
-            - Product / Pricing Inquiry
-            - High-Intent Lead (ready to convert)
-            - Hybrid Detection Strategy
-            - Primary: LLM-based intent classification using Gemini 1.5 Flash
-            - Fallback: Rule-based keyword heuristics
-    
-    This hybrid approach ensures:
-    
-        - Robust behavior during local testing
-        - Graceful degradation when API access is unavailable
-        - Production-like reliability
+    - Primary: LLM-based intent classification (Gemini 1.5 Flash)
+    - Fallback: Rule-based heuristics for deterministic behavior during API unavailability
 
-2. RAG-Powered Knowledge Retrieval
+This hybrid strategy improves reliability and reflects production-grade fault tolerance.
 
-The agent uses Retrieval-Augmented Generation (RAG) with a local knowledge base (JSON / Markdown).
+2. Retrieval-Augmented Generation (RAG)
 
-Included Knowledge Domains:
+Product information is retrieved dynamically from an external knowledge base rather than being hard-coded.
 
-    Pricing Plans
-    
-    - Basic Plan — $29/month
-    
-        10 videos/month
-        720p resolution
-    
-    - Pro Plan — $79/month
-    
-        Unlimited videos
-        4K resolution
-        AI captions
-    
-    - Company Policies
-    
-        No refunds after 7 days
-        24/7 support available only on Pro plan
-    
-Responses are retrieved dynamically, not hard-coded, ensuring maintainability and extensibility.
+Knowledge coverage includes:
 
-3. Tool Execution – Lead Capture
+Pricing plans (Basic / Pro)
 
-When high intent is detected, the agent initiates a multi-turn lead qualification flow.
+    - Feature limits and capabilities
+    - Support and refund policies
 
-Lead Information Collected:
+Design choice:
+RAG ensures responses remain maintainable, auditable, and easily extensible as product information evolves.
 
-    Name
-    Email
+3. Stateful Lead Qualification
 
-Creator platform (YouTube, Instagram, etc.)
+The agent maintains an in-memory conversation state across multiple turns, enabling:
 
-Key Design Principles
+    - Progressive slot filling (name, email, platform)
+    - Context retention across 5–6 interactions
+    - Safe gating of backend tool execution
+    - Backend actions are triggered only after all required information is collected, preventing premature or invalid lead creation.
 
-    - Uses slot-filling to retain partial information
-    - Maintains conversation state across turns
-    - Backend tools are triggered only after all required fields are collected
+4. Backend Tool Execution (Mocked)
 
-Backend Tool (Mock Implementation)
+A backend tool simulates lead capture:
 
     def mock_lead_capture(name, email, platform):
         print(f"Lead captured successfully: {name}, {email}, {platform}")
 
-This prevents premature or invalid lead creation.
+
+This mirrors real API invocation patterns without introducing external dependencies.
+
+Architecture
+
+    User Message
+       ↓
+    Intent Detection (LLM + Heuristics)
+       ↓
+    ┌─────────────────────────────┐
+    │  Product Inquiry?           │───▶ RAG Knowledge Retrieval
+    │  High Intent?               │───▶ Slot Filling & State Update
+    └─────────────────────────────┘
+       ↓
+    Backend Tool Trigger (Validated)
 
 Project Structure
 
     social-to-lead-agentic-workflow/
     │
     ├── data/
-    │   └── knowledge_base.json        # Product plans, pricing & policy knowledge (RAG source)
+    │   └── knowledge_base.json        # Product plans, pricing & policy knowledge
     │
     ├── src/
     │   ├── agent/
-    │   │   ├── __init__.py
-    │   │   ├── intent.py              # Hybrid intent detection (LLM + heuristics)
+    │   │   ├── intent.py              # Hybrid intent classification
     │   │   ├── rag.py                 # Retrieval-Augmented Generation logic
-    │   │   ├── tools.py               # Backend tools (mock lead capture)
-    │   │   ├── graph.py               # Agent orchestration & state transitions
+    │   │   ├── tools.py               # Backend tools (lead capture)
+    │   │   ├── graph.py               # Agent orchestration & state handling
     │   │
     │   └── main.py                    # Application entry point
     │
-    ├── leads.csv                      # Mock backend storage for captured leads
-    ├── .env                           # Environment variables (API keys)
-    ├── .gitignore
-    ├── requirements.txt               # Project dependencies
+    ├── leads.csv                      # Mock persistence for captured leads
+    ├── .env
+    ├── requirements.txt
     ├── README.md
     └── LICENSE
 
-Architecture Overview
+Design Rationale
 
-    Agent Architecture
-    
-        ```mermaid
-        flowchart TD
-            User[User Message]
-            
-            User --> Intent[Intent Detection]
-            
-            Intent -->|Greeting| Response[Conversational Response]
-            Intent -->|Pricing / Product| RAG[RAG Knowledge Retrieval]
-            Intent -->|High Intent| State[Lead Qualification State]
-            
-            RAG --> Response
-            
-            State --> SlotFill[Slot Filling]
-            SlotFill -->|Missing Info| Response
-            SlotFill -->|All Info Collected| Tool[Lead Capture Tool]
-            
-            Tool --> Backend[(Mock Backend / CSV)]
-            Backend --> Response
+    - Modular agent components for testability and maintainability
+    - Explicit state management for multi-turn conversations
+    - Externalized knowledge base to support scalable RAG
+    - Clear separation between reasoning, retrieval, and execution layers
+    - This mirrors design patterns used in production conversational AI systems.
 
-Why LangChain?
+Local Setup
 
-The project uses LangChain to build a modular, agentic workflow rather than a rule-based chatbot.
+Clone Repository
 
-LangChain enables:
+    git clone https://github.com/ayushks27/social-to-lead-agentic-workflow.git
+    cd social-to-lead-agentic-workflow
 
-    - Clear separation of concerns (intent, retrieval, tools)
-    - Prompt modularity
-    - Deterministic tool execution
+Environment Setup
 
-Although LangGraph is preferred in some production systems, this implementation uses explicit state handling in LangChain, which is:
+    python -m venv venv
+    source venv/bin/activate   # Windows: venv\Scripts\activate
+    pip install -r requirements.txt
 
-    - Simpler
-    - Stable
-    - Fully compliant with the assignment requirements
-
-State Management
-
-The agent maintains an in-memory state dictionary across conversation turns.
-
-State Tracks:
-
-    - Conversation history
-    - Detected intent and confidence
-    - Partially collected lead details (name, email, platform)
-
-During high-intent flows, the agent incrementally updates state using slot-filling logic.
-This approach is functionally equivalent to LangGraph memory nodes and demonstrates clean, real-world state management.
-
-Enhancement: Hybrid Intent Detection
-
-    - To increase robustness, the agent combines:
-    - LLM-based classification (Gemini 1.5 Flash)
-    - Rule-based heuristics as a fallback
-
-This reflects real-world conversational AI system design, where systems must remain functional even during partial outages or API failures.
-
-Running the Project Locally
-
-1. Clone the Repository
-
-        git clone https://github.com/ayushks27/social-to-lead-agentic-workflow.git
-        cd social-to-lead-agentic-workflow
-
-3. Create a Virtual Environment
-   
-        python -m venv venv
-        source venv/bin/activate   # Windows: venv\Scripts\activate
-
-4. Install Dependencies
-   
-        pip install -r requirements.txt
-
-5. Set Environment Variables
+Configure Environment Variables
 
 Create a .env file:
 
     GOOGLE_API_KEY=your_api_key_here
 
-Note: The agent is configured for Gemini 1.5 Flash as required.
-A heuristic fallback allows the project to run even without API access.
+A heuristic fallback allows the agent to run even without API access.
 
-5. Run the Agent
-   
-        python src/main.py
+    Run the Agent
+    python src/main.py
 
-Sample Conversation Flow:
+Example Interaction
 
     User: Hi
     Agent: Hi! I can help you with AutoStream pricing, plans, or features.
     
     User: Tell me about pricing
-    Agent: AutoStream Pricing:
-    - Basic Plan: $29/month...
-    - Pro Plan: $79/month...
+    Agent: AutoStream offers:
+    - Basic Plan: $29/month
+    - Pro Plan: $79/month
     
     User: I want the Pro plan for my YouTube channel
     Agent: Great! May I know your name?
     
     User: Ayush
-    Agent: Thanks! Please share your email address.
+    Agent: Please share your email address.
     
     User: ayush@gmail.com
     Agent: Which creator platform do you use?
     
     User: YouTube
     Lead captured successfully: Ayush, ayush@gmail.com, YouTube
-    Agent: Thanks! Your details have been captured. Our team will reach out shortly.
 
-WhatsApp Deployment (Conceptual Design):
+Deployment Considerations
 
-AutoStream can be deployed on WhatsApp using a Webhook-based architecture via the WhatsApp Business API (Meta / Twilio).
+The agent is designed to be deployed behind messaging platforms such as WhatsApp or web chat interfaces using webhook-based integrations. Conversation state and tool execution logic are platform-agnostic.
 
-    - High-Level Flow
-    
-    - Incoming Message
-      User message triggers a backend webhook.
-    
-    - Agent Processing
-    Message is passed to the AutoStream agent for intent detection, RAG, or lead qualification.
-    
-    - Response Generation
-    Agent responds based on conversation state.
-    
-    - Message Delivery
-    Response is sent back via WhatsApp Business API.
+License
 
-This design enables scalable, real-time social-to-lead conversion while preserving conversational context.
-
-Summary:
-
-AutoStream demonstrates:
-
-    - Agentic conversational design
-    - Hybrid intent detection
-    - RAG-based knowledge retrieval
-    - Safe, stateful tool execution
-    - Production-oriented architecture decisions
-
-This project reflects real-world GenAI system design used in sales automation and conversational growth platforms.
-
-Author 
-
-    Purnendu Raghav Srivastava
+MIT License
