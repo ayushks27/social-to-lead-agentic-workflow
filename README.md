@@ -2,23 +2,23 @@ AutoStream – Social-to-Lead Agentic Workflow
 
 Overview
 
-    - AutoStream is a production-style GenAI conversational agent designed to convert natural language conversations into qualified business leads for a fictional SaaS product offering automated video editing tools for content creators.
-    - The system goes beyond question-answering by detecting user intent, retrieving product knowledge, maintaining conversational state, and safely triggering backend actions only when qualification criteria are met.
-    - This project demonstrates agentic workflow design, Retrieval-Augmented Generation (RAG), and multi-turn state management, aligned with real-world conversational AI systems.
+- AutoStream is a production-style GenAI conversational agent designed to convert natural language conversations into qualified business leads for a fictional SaaS product offering automated video editing tools for content creators.
+- The system goes beyond question-answering by detecting user intent, retrieving product knowledge, maintaining conversational state, and safely triggering backend actions only when qualification criteria are met.
+- This project demonstrates agentic workflow design, Retrieval-Augmented Generation (RAG), and multi-turn state management, aligned with real-world conversational AI systems.
 
 Key Capabilities
 
 1. Intent Detection (Hybrid Approach)
 
-        - User messages are classified into one of three intents:
-        - Casual greeting
-        - Product or pricing inquiry
-        - High-intent lead (ready to sign up)
+- User messages are classified into one of three intents:
+- Casual greeting
+- Product or pricing inquiry
+- High-intent lead (ready to sign up)
 
 Implementation details:
 
-    - Primary: LLM-based intent classification (Gemini 1.5 Flash)
-    - Fallback: Rule-based heuristics for deterministic behavior during API unavailability
+- Primary: LLM-based intent classification (Gemini 1.5 Flash)
+- Fallback: Rule-based heuristics for deterministic behavior during API unavailability
 
 This hybrid strategy improves reliability and reflects production-grade fault tolerance.
 
@@ -30,8 +30,8 @@ Knowledge coverage includes:
 
 Pricing plans (Basic / Pro)
 
-    - Feature limits and capabilities
-    - Support and refund policies
+- Feature limits and capabilities
+- Support and refund policies
 
 Design choice:
 RAG ensures responses remain maintainable, auditable, and easily extensible as product information evolves.
@@ -40,10 +40,10 @@ RAG ensures responses remain maintainable, auditable, and easily extensible as p
 
 The agent maintains an in-memory conversation state across multiple turns, enabling:
 
-    - Progressive slot filling (name, email, platform)
-    - Context retention across 5–6 interactions
-    - Safe gating of backend tool execution
-    - Backend actions are triggered only after all required information is collected, preventing premature or invalid lead creation.
+- Progressive slot filling (name, email, platform)
+- Context retention across 5–6 interactions
+- Safe gating of backend tool execution
+- Backend actions are triggered only after all required information is collected, preventing premature or invalid lead creation.
 
 4. Backend Tool Execution (Mocked)
 
@@ -92,11 +92,11 @@ Project Structure
 
 Design Rationale
 
-    - Modular agent components for testability and maintainability
-    - Explicit state management for multi-turn conversations
-    - Externalized knowledge base to support scalable RAG
-    - Clear separation between reasoning, retrieval, and execution layers
-    - This mirrors design patterns used in production conversational AI systems.
+- Modular agent components for testability and maintainability
+- Explicit state management for multi-turn conversations
+- Externalized knowledge base to support scalable RAG
+- Clear separation between reasoning, retrieval, and execution layers
+- This mirrors design patterns used in production conversational AI systems.
 
 Local Setup
 
